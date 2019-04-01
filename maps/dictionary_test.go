@@ -25,6 +25,16 @@ func TestSearch(t *testing.T)  {
 		assertStrings(t, err.Error(), want)
 	})
 
+	t.Run("existing word", func(t *testing.T) {
+		word := "test"
+		def := "this is just a test"
+		dictionary := Dictionary{word: def}
+		err := dictionary.Add(word, "test")
+
+		assertError(t, err, ErrWordExists)
+		assertDefinition(t, dictionary, word, def)
+	})
+
 }
 
 func assertStrings(t *testing.T, got, want string)  {
@@ -38,10 +48,11 @@ func assertStrings(t *testing.T, got, want string)  {
 func TestAdd(t *testing.T) {
 	dictionary := Dictionary{}
 	word := "test"
-	definition := "this is just a test"
-	dictionary.Add(word, definition)
+	def := "this is just a test"
+	err := dictionary.Add(word, def)
 
-	assertDefinition(t, dictionary, word, definition)
+	assertError(t, err, nil)
+	assertDefinition(t, dictionary, word, def)
 }
 
 func assertDefinition(t *testing.T, dictionary Dictionary,word, definition string)  {
@@ -57,3 +68,10 @@ func assertDefinition(t *testing.T, dictionary Dictionary,word, definition strin
 	}
 }
 
+func assertError(t *testing.T, err, expected error)  {
+	t.Helper()
+
+    if err != expected {
+		t.Errorf("got '%s' want '%s'", err,expected)
+    }
+}
